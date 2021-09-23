@@ -1,0 +1,40 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: rabbitmq
+  namespace: sellers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rabbitmq
+    spec:
+      volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: rabbitmq-data-claim
+      containers:
+        - name: rabbitmq
+          image: suhyung007/sellers:rabbit-1
+          ports:
+            - name: management
+              containerPort: 15672
+              protocol: TCP
+            - name: amq
+              containerPort: 5672
+              protocol: TCP
+            - name: metrics
+              containerPort: 15692
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /mnt/data/rabbitmq
