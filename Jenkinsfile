@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           echo "Deploy App START"
-          kubernetesDeploy(configs: "salesactive-deployment.yaml", kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "rabbit_deployment.yaml", kubeconfigId: "mykubeconfig")
           echo "Deploy App END"
         }
       }
