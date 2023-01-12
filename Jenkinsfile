@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           echo "Deploy App START"
-          sh "/usr/local/bin/kubectl --kubeconfig=/root/acloud-client.conf -f rabbit_deployment.yaml"
+          sh "/usr/local/bin/kubectl --kubeconfig=/root/acloud-client.conf create -f rabbit_deployment.yaml"
           echo "Deploy App END"
         }
       }
