@@ -34,6 +34,7 @@ pipeline {
       steps{
         script {
           echo "Push Image START"
+          sh "docker login 192.168.100.12 -u admin -p Unipoint11"
           sh "docker push 192.168.100.12/shpark/sellers:rabbit-$BUILD_NUMBER"
           }
         echo "Push Image END"
