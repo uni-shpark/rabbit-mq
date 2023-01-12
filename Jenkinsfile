@@ -37,10 +37,10 @@ pipeline {
           echo "Push Image START"
           sh "docker push 192.168.100.12/shpark/sellers:rabbit-$BUILD_NUMBER"
           }
-          echo "Push Image END"
-        }
+        echo "Push Image END"
       }
     }
+    
 
     stage('Deploy App') {
       steps {
