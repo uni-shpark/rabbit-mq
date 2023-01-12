@@ -1,7 +1,7 @@
 pipeline {
 
   environment {
-    registry = "uni-shpark/sellers"
+    registry = "uni-shpark/rabbit-mq"
     dockerImage = ""
   }
 
@@ -34,7 +34,7 @@ pipeline {
       steps{
         script {
           echo "Push Image START"
-          docker.withRegistry( "https://registry.hub.docker.com", registryCredential ) {
+          docker.withRegistry( "192.168.100.12/shpark/", harbor ) {
             dockerImage.push()
           }
           echo "Push Image END"
