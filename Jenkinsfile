@@ -1,57 +1,53 @@
+def component = [
+		Preprocess: false,
+		Hyper: false,
+		Train: false,
+		Test: false,
+		Bento: false
+]
 pipeline {
-
-  environment {
-    registry = "uni-shpark/rabbit-mq"
-    dockerImage = ""
-  }
-
-  agent any
-
-  stages {
-
-    stage('Checkout Source') {
-      steps {
-        echo "Checkout Source START"
-        git 'https://github.com/uni-shpark/rabbit-mq.git'
-        echo "Checkout Source END"
-      }
-    }
-
-    stage('Build image') {
-      steps{
-        script {
-          echo "Build image START $BUILD_NUMBER"
-          dockerImage = docker.build("shpark/sellers:rabbit-$BUILD_NUMBER")
-          echo "Build image END"
-        }
-      }
-    }
-
-    stage('Push Image') {
-      environment {
-               registryCredential = 'harbor'
-           }
-      steps{
-        script {
-          echo "Push Image START"
-          docker.withRegistry( "192.168.100.12/shpark/", registryCredential ) {
-            dockerImage.push()
-          }
-          echo "Push Image END"
-        }
-      }
-    }
-
-    stage('Deploy App') {
-      steps {
-        script {
-          echo "Deploy App START"
-          kubernetesDeploy(configs: "rabbit_deployment.yaml", kubeconfigId: "c7ec77d9-5b38-4554-9ec0-57aacac57f9b")
-          echo "Deploy App END"
-        }
-      }
-    }
-
-  }
-
+	agent any
+	stages {
+		stage("Checkout") {
+			steps {
+				checkout scm
+			}
+		}
+		stage("Build") {
+			steps {
+                script {
+					component.each{ entry ->
+						stage ("${entry.key} Build"){
+							if(entry.value){
+								var = entry.key
+								sh "docker build ${var.toLowerCase()}"
+							}	
+						}
+					}
+				}
+			}
+		}
+		stage("Tag and Push") {
+			steps {
+                script {
+					component.each{ entry ->
+						stage ("${entry.key} Push"){
+							if(entry.value){
+								var = entry.key
+								withCredentials([[$class: 'UsernamePasswordMultiBinding',
+								credentialsId: 'harbor',
+								usernameVariable: 'DOCKER_USER_ID',
+								passwordVariable: 'DOCKER_USER_PASSWORD'
+								]]){
+								sh "docker tag spaceship_pipeline_${var.toLowerCase()}:latest ${DOCKER_USER_ID}/spaceship_pipeline_${var.toLowerCase()}:${BUILD_NUMBER}"
+								sh "docker login -u ${DOCKER_USER_ID} -p ${DOCKER_USER_PASSWORD}"
+								sh "docker push ${DOCKER_USER_ID}/spaceship_pipeline_${var.toLowerCase()}:${BUILD_NUMBER}"
+								}
+							}
+						}
+					}
+				}
+			}	
+		}
+	}
 }
