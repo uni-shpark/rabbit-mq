@@ -21,8 +21,7 @@ pipeline {
       steps{
         script {
           echo "Build image START $BUILD_NUMBER"
-          sh "docker shpark/sellers:rabbit-$BUILD_NUMBER"
-          dockerImage = docker.build("192.168.100.12/shpark/sellers:rabbit-$BUILD_NUMBER")
+          sh "docker build -t 192.168.100.12/shpark/sellers:rabbit-$BUILD_NUMBER ."
           echo "Build image END"
         }
       }
