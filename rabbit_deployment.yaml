@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: rabbitmq
-  namespace: sellers
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -20,7 +20,7 @@ spec:
             claimName: rabbitmq-data-claim
       containers:
         - name: rabbitmq
-          image: 192.168.100.12/shpark/sellers:rabbit-1
+          image: 192.168.100.12/shpark/sellers:rabbit-10
           ports:
             - name: management
               containerPort: 15672
