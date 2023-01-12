@@ -21,7 +21,7 @@ pipeline {
       steps{
         script {
           echo "Build image START $BUILD_NUMBER"
-          dockerImage = docker.build("suhyung007/sellers:rabbit-$BUILD_NUMBER")
+          dockerImage = docker.build("shpark/sellers:rabbit-$BUILD_NUMBER")
           echo "Build image END"
         }
       }
@@ -29,12 +29,12 @@ pipeline {
 
     stage('Push Image') {
       environment {
-               registryCredential = 'dockerhub'
+               registryCredential = 'harbor'
            }
       steps{
         script {
           echo "Push Image START"
-          docker.withRegistry( "192.168.100.12/shpark/", harbor ) {
+          docker.withRegistry( "192.168.100.12/shpark/", registryCredential ) {
             dockerImage.push()
           }
           echo "Push Image END"
@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           echo "Deploy App START"
-          kubernetesDeploy(configs: "rabbit_deployment.yaml", kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "rabbit_deployment.yaml", kubeconfigId: "c7ec77d9-5b38-4554-9ec0-57aacac57f9b")
           echo "Deploy App END"
         }
       }
